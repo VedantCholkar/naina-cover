@@ -1,6 +1,5 @@
 ---
-// index.astro — Single-frame music showcase
-// Place your .m4a file in /public/audio/track.m4a
+// index.astro — Dark Brutalist Frost Showcase
 ---
 
 <html lang="en">
@@ -10,308 +9,209 @@
   <title>// Naina Da Kya Kasoor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Inter:wght@300;400;800&family=Space+Mono&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --white: #f5f3ee;
-      --off-white: #e8e4db;
-      --stone: #c4bfb5;
-      --mid: #6b6760;
-      --dark: #1a1917;
-      --black: #0d0c0b;
-      --accent: #c8a96e;
-      --accent-dim: #8a7349;
-      --font-display: 'Cormorant Garamond', Georgia, serif;
-      --font-mono: 'Fragment Mono', 'Courier New', monospace;
+      --bg-pure: #0a0a0a;
+      --text-main: #f5f3ee;
+      --text-muted: #6b6760;
+      /* Intense Frost Variables */
+      --glass-bg: rgba(20, 20, 20, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+      
+      --font-display: 'Inter', sans-serif;
+      --font-serif: 'Cormorant Garamond', serif;
+      --font-mono: 'Space Mono', monospace;
     }
 
     html, body {
       height: 100%;
       width: 100%;
       overflow: hidden;
-      background: var(--black);
-      color: var(--white);
+      background: var(--bg-pure);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── DOT GRID ─── */
-    .dot-grid {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background-image: radial-gradient(circle, rgba(196,191,181,0.18) 1px, transparent 1px);
-      background-size: 32px 32px;
-      pointer-events: none;
-    }
-
-    /* ─── VIGNETTE ─── */
-    .vignette {
+    /* ─── HEAVY BRUTALIST NOISE ─── */
+    .noise-layer {
       position: fixed;
       inset: 0;
       z-index: 1;
-      background: radial-gradient(ellipse at center, transparent 30%, rgba(13,12,11,0.85) 100%);
+      opacity: 0.05;
       pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
-    /* ─── NOISE ─── */
-    .noise {
+    /* ─── HALFTONE / GRID ACCENTS (Longshot vibe) ─── */
+    .brutalist-grid {
       position: fixed;
       inset: 0;
-      z-index: 2;
-      opacity: 0.035;
+      z-index: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
       pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 200px 200px;
     }
 
-    /* ─── LAYOUT ─── */
-    .frame {
-      position: relative;
-      z-index: 10;
+    .halftone-corner {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 40vw;
+      height: 60vh;
+      z-index: 0;
+      opacity: 0.15;
+      background-image: radial-gradient(circle, var(--text-main) 2px, transparent 2.5px);
+      background-size: 12px 12px;
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+      pointer-events: none;
+    }
+
+    /* ─── BACKGROUND TYPOGRAPHY ─── */
+    .bg-text-container {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 100vw;
-      height: 100vh;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      grid-template-columns: 1fr;
-      padding: clamp(2rem, 5vw, 4rem);
+      text-align: center;
+      z-index: 2;
+      pointer-events: none;
     }
 
-    /* ─── TOP: MAIN CONTENT ─── */
-    .content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0;
-      opacity: 0;
-      animation: rise 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
-    }
-
-    .eyebrow {
-      font-family: var(--font-mono);
-      font-size: clamp(0.6rem, 1vw, 0.72rem);
-      letter-spacing: 0.25em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
-    }
-
-    .title {
+    .massive-title {
       font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(6rem, 16vw, 15rem);
+      line-height: 0.75;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .serif-accent {
+      font-family: var(--font-serif);
       font-weight: 300;
       font-style: italic;
-      font-size: clamp(4rem, 14vw, 13rem);
-      line-height: 0.85;
-      letter-spacing: -0.02em;
-      color: var(--white);
-      margin-bottom: clamp(1rem, 2vw, 1.5rem);
-      /* Horizontal rule bleed on left edge */
-      margin-left: -0.04em;
+      font-size: clamp(3rem, 8vw, 7rem);
+      color: var(--text-muted);
+      display: block;
+      margin-top: -0.2em;
+      letter-spacing: 0;
     }
 
-    .title span {
-      color: var(--accent);
-      font-style: normal;
-      font-weight: 600;
+    /* ─── META INFO (Top Corners) ─── */
+    .meta-top {
+      position: fixed;
+      top: 3rem;
+      width: 100%;
+      padding: 0 4rem;
+      display: flex;
+      justify-content: space-between;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
     }
 
-    .subtitle-row {
+    /* ─── FLOATING FROSTED PLAYER PILL ─── */
+    .player-wrapper {
+      position: absolute;
+      bottom: 4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      width: min(900px, 90vw);
+    }
+
+    .frosted-pill {
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid rgba(255, 255, 255, 0.2); /* Highlight edge for extra depth */
+      border-radius: 100px;
+      padding: 1.25rem 2.5rem;
+      box-shadow: var(--glass-shadow);
       display: flex;
       align-items: center;
-      gap: 1.5rem;
-      margin-top: clamp(1.5rem, 3vw, 2.5rem);
-    }
-
-    .rule {
-      flex: 0 0 60px;
-      height: 1px;
-      background: linear-gradient(90deg, var(--accent), transparent);
-    }
-
-    .subtitle {
-      font-family: var(--font-mono);
-      font-size: clamp(0.65rem, 1.1vw, 0.8rem);
-      letter-spacing: 0.18em;
-      color: var(--stone);
-      text-transform: uppercase;
-    }
-
-    /* ─── SIDE LABEL ─── */
-    .side-label {
-      position: fixed;
-      right: clamp(1.5rem, 3vw, 3rem);
-      top: 50%;
-      transform: translateY(-50%) rotate(90deg);
-      transform-origin: center center;
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.3em;
-      color: var(--mid);
-      text-transform: uppercase;
-      white-space: nowrap;
-      opacity: 0;
-      animation: fade 1s ease 1.2s forwards;
-    }
-
-    /* ─── BOTTOM: PLAYER ─── */
-    .player-zone {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
       gap: 2rem;
-      opacity: 0;
-      animation: rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
     }
 
-    .player {
+    /* ─── CONTROLS ─── */
+    .play-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--text-main);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      flex-shrink: 0;
+    }
+
+    .play-btn:hover { transform: scale(1.05); background: #ffffff; }
+    .play-btn svg { width: 18px; height: 18px; fill: var(--bg-pure); }
+
+    /* Track/Waveform container */
+    .track-info {
+      flex-grow: 1;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      width: min(520px, 100%);
+      gap: 0.5rem;
     }
 
-    /* Waveform canvas */
     .waveform-wrap {
       position: relative;
-      height: 48px;
+      height: 40px;
+      width: 100%;
       cursor: pointer;
     }
+
     #waveform {
       width: 100%;
       height: 100%;
       display: block;
     }
 
-    /* Progress track */
-    .progress-track {
-      position: relative;
-      height: 1px;
-      background: rgba(196,191,181,0.12);
-      cursor: pointer;
-    }
-    .progress-fill {
+    /* Scrub overlay */
+    .progress-overlay {
       position: absolute;
-      left: 0; top: 0; bottom: 0;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.1s linear;
-      pointer-events: none;
+      inset: 0;
+      z-index: 2;
     }
-    .progress-head {
+    
+    .progress-line {
       position: absolute;
       top: 50%;
-      transform: translate(-50%, -50%);
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      left: 0%;
-      transition: left 0.1s linear;
+      left: 0;
+      height: 2px;
+      background: var(--text-main);
+      width: 0%;
+      transform: translateY(-50%);
       pointer-events: none;
+      transition: width 0.1s linear;
     }
 
-    /* Controls row */
-    .controls {
+    /* Time & Labels */
+    .time-row {
       display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .play-btn {
-      width: 44px; height: 44px;
-      border: 1px solid var(--accent-dim);
-      border-radius: 50%;
-      background: transparent;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.2s, background 0.2s;
-      flex-shrink: 0;
-    }
-    .play-btn:hover {
-      border-color: var(--accent);
-      background: rgba(200,169,110,0.08);
-    }
-    .play-btn svg { width: 16px; height: 16px; fill: var(--accent); }
-
-    .time-display {
+      justify-content: space-between;
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       letter-spacing: 0.1em;
-      color: var(--stone);
-    }
-    .time-display .total { color: var(--mid); }
-
-    /* Volume */
-    .vol-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-left: auto;
-    }
-    .vol-wrap svg { width: 14px; height: 14px; fill: var(--mid); flex-shrink: 0; }
-    .vol-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 70px; height: 1px;
-      background: rgba(196,191,181,0.2);
-      outline: none;
-      cursor: pointer;
-    }
-    .vol-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--stone);
-      cursor: pointer;
-    }
-
-    /* ─── BOTTOM RIGHT INFO ─── */
-    .meta {
-      text-align: right;
-      font-family: var(--font-mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.15em;
-      color: var(--mid);
-      line-height: 2;
-    }
-    .meta strong {
-      display: block;
-      color: var(--stone);
-      font-weight: 400;
-    }
-
-    /* ─── TOP RIGHT TAG ─── */
-    .corner-tag {
-      position: fixed;
-      top: clamp(1.5rem, 3vw, 3rem);
-      right: clamp(1.5rem, 3vw, 3rem);
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      color: var(--mid);
-      text-transform: uppercase;
-      opacity: 0;
-      animation: fade 1s ease 1.4s forwards;
-    }
-
-    /* ─── HORIZONTAL DIVIDER ─── */
-    .h-rule {
-      position: fixed;
-      bottom: calc(clamp(2rem, 5vw, 4rem) + 120px);
-      left: clamp(2rem, 5vw, 4rem);
-      right: clamp(2rem, 5vw, 4rem);
-      height: 1px;
-      background: rgba(196,191,181,0.07);
-    }
-
-    /* ─── ANIMATIONS ─── */
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fade {
-      from { opacity: 0; }
-      to   { opacity: 1; }
+      color: var(--text-muted);
     }
 
     /* ─── PLAYING STATE ─── */
@@ -320,152 +220,90 @@
     .play-btn:not(.playing) .icon-play { display: block; }
     .play-btn:not(.playing) .icon-pause { display: none; }
 
-    /* ─── VISUALIZER BAR ─── */
-    .viz-bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 48px;
-      opacity: 0.5;
-      transition: opacity 0.3s;
-    }
-    .viz-bars.active { opacity: 1; }
-    .viz-bar {
-      width: 3px;
-      background: var(--accent);
-      border-radius: 1px;
-      min-height: 2px;
-      transition: height 0.05s ease;
-    }
-
-    @media (max-width: 640px) {
-      .title { font-size: clamp(3.5rem, 18vw, 6rem); }
-      .player-zone { flex-direction: column; align-items: flex-start; }
-      .meta { text-align: left; }
-      .side-label { display: none; }
+    @media (max-width: 768px) {
+      .frosted-pill { padding: 1rem 1.5rem; gap: 1rem; border-radius: 24px; flex-direction: column; }
+      .meta-top { padding: 0 1.5rem; top: 1.5rem; }
+      .waveform-wrap { height: 30px; }
+      .play-btn { width: 48px; height: 48px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="dot-grid"></div>
-  <div class="vignette"></div>
-  <div class="noise"></div>
+  <div class="brutalist-grid"></div>
+  <div class="halftone-corner"></div>
+  <div class="noise-layer"></div>
 
-  <div class="corner-tag">2025 // Single</div>
-  <div class="side-label">Original Composition — Unreleased</div>
-  <div class="h-rule"></div>
+  <header class="meta-top">
+    <div>Vol 01.</div>
+    <div>Acoustic // Raw</div>
+  </header>
 
-  <div class="frame">
+  <main class="bg-text-container">
+    <h1 class="massive-title">Naina Da</h1>
+    <span class="serif-accent">Kya Kasoor</span>
+  </main>
 
-    <!-- MAIN TITLE BLOCK -->
-    <div class="content">
-      <p class="eyebrow">001 // Now Playing</p>
-      <h1 class="title">
-       Naina Da Kya Kasoor
-      </h1>
-      <div class="subtitle-row">
-        <div class="rule"></div>
-        <p class="subtitle">Your Guitarist</p>
-      </div>
-    </div>
+  <div class="player-wrapper">
+    <div class="frosted-pill">
+      
+      <button class="play-btn" id="play-btn" aria-label="Play / Pause">
+        <svg class="icon-play" viewBox="0 0 24 24"><polygon points="7,4 20,12 7,20"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
 
-    <!-- PLAYER ZONE -->
-    <div class="player-zone">
-
-      <div class="player">
-        <!-- Waveform / visualizer -->
+      <div class="track-info">
+        <div class="time-row">
+          <span>Your Guitarist</span>
+          <span><span id="time-current">0:00</span> / <span id="time-total">—</span></span>
+        </div>
+        
         <div class="waveform-wrap" id="waveform-wrap">
           <canvas id="waveform"></canvas>
-        </div>
-
-        <!-- Scrub bar -->
-        <div class="progress-track" id="progress-track">
-          <div class="progress-fill" id="progress-fill"></div>
-          <div class="progress-head" id="progress-head"></div>
-        </div>
-
-        <!-- Controls -->
-        <div class="controls">
-          <button class="play-btn" id="play-btn" aria-label="Play / Pause">
-            <!-- Play icon -->
-            <svg class="icon-play" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <polygon points="6,3 20,12 6,21"/>
-            </svg>
-            <!-- Pause icon -->
-            <svg class="icon-pause" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="5" y="3" width="4" height="18" rx="1"/>
-              <rect x="15" y="3" width="4" height="18" rx="1"/>
-            </svg>
-          </button>
-
-          <span class="time-display">
-            <span id="time-current">0:00</span>
-            <span class="total"> / <span id="time-total">—</span></span>
-          </span>
-
-          <div class="vol-wrap">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <polygon points="3,9 3,15 7,15 13,21 13,3 7,9"/>
-              <path d="M16 9a5 5 0 0 1 0 6" stroke="#6b6760" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-            </svg>
-            <input type="range" class="vol-slider" id="vol-slider" min="0" max="1" step="0.01" value="0.8" />
+          <div class="progress-overlay" id="progress-track">
+            <div class="progress-line" id="progress-line"></div>
           </div>
         </div>
-      </div>
-
-      <!-- META -->
-      <div class="meta">
-        <strong>Vedant</strong>
-        Special Day<br />
-        MMXXV
       </div>
 
     </div>
   </div>
 
-  <!-- AUDIO ELEMENT -->
-  <!-- ⚠️  Put your .m4a at /public/audio/track.m4a -->
-<audio id="audio" preload="metadata" crossorigin="anonymous">
-  <source src="https://res.cloudinary.com/df6yxni8e/video/upload/Naina_Da_Kya_Kasoor_fkarmf.m4a" type="audio/mp4" />
-</audio>
-
+  <audio id="audio" preload="metadata" crossorigin="anonymous">
+    <source src="https://res.cloudinary.com/df6yxni8e/video/upload/Naina_Da_Kya_Kasoor_fkarmf.m4a" type="audio/mp4" />
+  </audio>
 
   <script>
     const audio = document.getElementById('audio');
     const playBtn = document.getElementById('play-btn');
-    const progressFill = document.getElementById('progress-fill');
-    const progressHead = document.getElementById('progress-head');
+    const progressLine = document.getElementById('progress-line');
     const progressTrack = document.getElementById('progress-track');
     const timeCurrent = document.getElementById('time-current');
     const timeTotal = document.getElementById('time-total');
-    const volSlider = document.getElementById('vol-slider');
     const waveformCanvas = document.getElementById('waveform');
     const ctx = waveformCanvas.getContext('2d');
 
-    // ─── Audio context & analyser ───
-    let audioCtx, analyser, source, bars = [];
-    const BAR_COUNT = 48;
+    let audioCtx, analyser, source;
+    const BAR_COUNT = 70;
 
     function fmt(s) {
+      if (isNaN(s)) return "0:00";
       const m = Math.floor(s / 60);
       const sec = Math.floor(s % 60).toString().padStart(2, '0');
       return `${m}:${sec}`;
     }
 
-    // ─── Setup Web Audio ───
     function setupAudio() {
       if (audioCtx) return;
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 128;
+      analyser.fftSize = 256;
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
       drawBars();
     }
 
-    // ─── Draw animated bars ───
     function drawBars() {
       requestAnimationFrame(drawBars);
       if (!analyser) return;
@@ -476,19 +314,21 @@
       analyser.getByteFrequencyData(data);
 
       ctx.clearRect(0, 0, W, H);
+      const barW = (W / BAR_COUNT) - 2;
 
-      const barW = (W / BAR_COUNT) - 1.5;
       for (let i = 0; i < BAR_COUNT; i++) {
         const v = data[Math.floor(i * data.length / BAR_COUNT)] / 255;
-        const h = audio.paused ? (2 + Math.random() * 3) : Math.max(2, v * H);
-        const x = i * (barW + 1.5);
+        const h = audio.paused ? (2 + Math.random() * 2) : Math.max(2, v * H);
+        const x = i * (barW + 2);
+        
+        // Switched bars to light cream to pop against the dark mode
         const alpha = audio.paused ? 0.2 : (0.4 + v * 0.6);
-        ctx.fillStyle = `rgba(200,169,110,${alpha})`;
-        ctx.fillRect(x, H - h, barW, h);
+        ctx.fillStyle = `rgba(245, 243, 238, ${alpha})`;
+        
+        ctx.fillRect(x, (H / 2) - (h / 2), barW, h);
       }
     }
 
-    // ─── Resize canvas ───
     function resizeCanvas() {
       const wrap = document.getElementById('waveform-wrap');
       waveformCanvas.width = wrap.clientWidth;
@@ -497,7 +337,6 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    // ─── Play / Pause ───
     playBtn.addEventListener('click', () => {
       setupAudio();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -510,12 +349,10 @@
       }
     });
 
-    // ─── Time update ───
     audio.addEventListener('timeupdate', () => {
       if (!audio.duration) return;
       const pct = (audio.currentTime / audio.duration) * 100;
-      progressFill.style.width = pct + '%';
-      progressHead.style.left = pct + '%';
+      progressLine.style.width = pct + '%';
       timeCurrent.textContent = fmt(audio.currentTime);
     });
 
@@ -525,9 +362,9 @@
 
     audio.addEventListener('ended', () => {
       playBtn.classList.remove('playing');
+      progressLine.style.width = '0%';
     });
 
-    // ─── Scrub ───
     progressTrack.addEventListener('click', (e) => {
       if (!audio.duration) return;
       const rect = progressTrack.getBoundingClientRect();
@@ -535,30 +372,22 @@
       audio.currentTime = pct * audio.duration;
     });
 
-    // ─── Volume ───
-    audio.volume = 0.8;
-    volSlider.addEventListener('input', () => {
-      audio.volume = volSlider.value;
-    });
-
-    // ─── Idle bar shimmer (no audio ctx) ───
     (function idleShimmer() {
       if (!analyser) {
         resizeCanvas();
         const W = waveformCanvas.width;
         const H = waveformCanvas.height;
         ctx.clearRect(0, 0, W, H);
-        const barW = (W / BAR_COUNT) - 1.5;
-        const t = Date.now() / 800;
+        const barW = (W / BAR_COUNT) - 2;
+        const t = Date.now() / 600;
         for (let i = 0; i < BAR_COUNT; i++) {
-          const h = 2 + Math.sin(t + i * 0.4) * 1.5;
-          ctx.fillStyle = 'rgba(200,169,110,0.15)';
-          ctx.fillRect(i * (barW + 1.5), H - h, barW, h);
+          const h = 4 + Math.sin(t + i * 0.2) * 4;
+          ctx.fillStyle = 'rgba(245, 243, 238, 0.15)';
+          ctx.fillRect(i * (barW + 2), (H / 2) - (h / 2), barW, h);
         }
         requestAnimationFrame(idleShimmer);
       }
     })();
   </script>
-
 </body>
 </html>
