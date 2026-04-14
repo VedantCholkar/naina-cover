@@ -1,0 +1,564 @@
+---
+// index.astro — Single-frame music showcase
+// Place your .m4a file in /public/audio/track.m4a
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>// Naina Da Kya Kasoor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #f5f3ee;
+      --off-white: #e8e4db;
+      --stone: #c4bfb5;
+      --mid: #6b6760;
+      --dark: #1a1917;
+      --black: #0d0c0b;
+      --accent: #c8a96e;
+      --accent-dim: #8a7349;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-mono: 'Fragment Mono', 'Courier New', monospace;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: var(--black);
+      color: var(--white);
+    }
+
+    /* ─── DOT GRID ─── */
+    .dot-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: radial-gradient(circle, rgba(196,191,181,0.18) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    /* ─── VIGNETTE ─── */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(13,12,11,0.85) 100%);
+      pointer-events: none;
+    }
+
+    /* ─── NOISE ─── */
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      opacity: 0.035;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ─── LAYOUT ─── */
+    .frame {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      grid-template-columns: 1fr;
+      padding: clamp(2rem, 5vw, 4rem);
+    }
+
+    /* ─── TOP: MAIN CONTENT ─── */
+    .content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+      opacity: 0;
+      animation: rise 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: clamp(0.6rem, 1vw, 0.72rem);
+      letter-spacing: 0.25em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    .title {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(4rem, 14vw, 13rem);
+      line-height: 0.85;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: clamp(1rem, 2vw, 1.5rem);
+      /* Horizontal rule bleed on left edge */
+      margin-left: -0.04em;
+    }
+
+    .title span {
+      color: var(--accent);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .subtitle-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    }
+
+    .rule {
+      flex: 0 0 60px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .subtitle {
+      font-family: var(--font-mono);
+      font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+      letter-spacing: 0.18em;
+      color: var(--stone);
+      text-transform: uppercase;
+    }
+
+    /* ─── SIDE LABEL ─── */
+    .side-label {
+      position: fixed;
+      right: clamp(1.5rem, 3vw, 3rem);
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      transform-origin: center center;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--mid);
+      text-transform: uppercase;
+      white-space: nowrap;
+      opacity: 0;
+      animation: fade 1s ease 1.2s forwards;
+    }
+
+    /* ─── BOTTOM: PLAYER ─── */
+    .player-zone {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      opacity: 0;
+      animation: rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+    }
+
+    .player {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: min(520px, 100%);
+    }
+
+    /* Waveform canvas */
+    .waveform-wrap {
+      position: relative;
+      height: 48px;
+      cursor: pointer;
+    }
+    #waveform {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Progress track */
+    .progress-track {
+      position: relative;
+      height: 1px;
+      background: rgba(196,191,181,0.12);
+      cursor: pointer;
+    }
+    .progress-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.1s linear;
+      pointer-events: none;
+    }
+    .progress-head {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      left: 0%;
+      transition: left 0.1s linear;
+      pointer-events: none;
+    }
+
+    /* Controls row */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .play-btn {
+      width: 44px; height: 44px;
+      border: 1px solid var(--accent-dim);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+    .play-btn:hover {
+      border-color: var(--accent);
+      background: rgba(200,169,110,0.08);
+    }
+    .play-btn svg { width: 16px; height: 16px; fill: var(--accent); }
+
+    .time-display {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--stone);
+    }
+    .time-display .total { color: var(--mid); }
+
+    /* Volume */
+    .vol-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-left: auto;
+    }
+    .vol-wrap svg { width: 14px; height: 14px; fill: var(--mid); flex-shrink: 0; }
+    .vol-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 70px; height: 1px;
+      background: rgba(196,191,181,0.2);
+      outline: none;
+      cursor: pointer;
+    }
+    .vol-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--stone);
+      cursor: pointer;
+    }
+
+    /* ─── BOTTOM RIGHT INFO ─── */
+    .meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--mid);
+      line-height: 2;
+    }
+    .meta strong {
+      display: block;
+      color: var(--stone);
+      font-weight: 400;
+    }
+
+    /* ─── TOP RIGHT TAG ─── */
+    .corner-tag {
+      position: fixed;
+      top: clamp(1.5rem, 3vw, 3rem);
+      right: clamp(1.5rem, 3vw, 3rem);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--mid);
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fade 1s ease 1.4s forwards;
+    }
+
+    /* ─── HORIZONTAL DIVIDER ─── */
+    .h-rule {
+      position: fixed;
+      bottom: calc(clamp(2rem, 5vw, 4rem) + 120px);
+      left: clamp(2rem, 5vw, 4rem);
+      right: clamp(2rem, 5vw, 4rem);
+      height: 1px;
+      background: rgba(196,191,181,0.07);
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ─── PLAYING STATE ─── */
+    .play-btn.playing .icon-play { display: none; }
+    .play-btn.playing .icon-pause { display: block; }
+    .play-btn:not(.playing) .icon-play { display: block; }
+    .play-btn:not(.playing) .icon-pause { display: none; }
+
+    /* ─── VISUALIZER BAR ─── */
+    .viz-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 48px;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+    .viz-bars.active { opacity: 1; }
+    .viz-bar {
+      width: 3px;
+      background: var(--accent);
+      border-radius: 1px;
+      min-height: 2px;
+      transition: height 0.05s ease;
+    }
+
+    @media (max-width: 640px) {
+      .title { font-size: clamp(3.5rem, 18vw, 6rem); }
+      .player-zone { flex-direction: column; align-items: flex-start; }
+      .meta { text-align: left; }
+      .side-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dot-grid"></div>
+  <div class="vignette"></div>
+  <div class="noise"></div>
+
+  <div class="corner-tag">2025 // Single</div>
+  <div class="side-label">Original Composition — Unreleased</div>
+  <div class="h-rule"></div>
+
+  <div class="frame">
+
+    <!-- MAIN TITLE BLOCK -->
+    <div class="content">
+      <p class="eyebrow">001 // Now Playing</p>
+      <h1 class="title">
+       Naina Da Kya Kasoor
+      </h1>
+      <div class="subtitle-row">
+        <div class="rule"></div>
+        <p class="subtitle">Your Guitarist</p>
+      </div>
+    </div>
+
+    <!-- PLAYER ZONE -->
+    <div class="player-zone">
+
+      <div class="player">
+        <!-- Waveform / visualizer -->
+        <div class="waveform-wrap" id="waveform-wrap">
+          <canvas id="waveform"></canvas>
+        </div>
+
+        <!-- Scrub bar -->
+        <div class="progress-track" id="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+          <div class="progress-head" id="progress-head"></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+          <button class="play-btn" id="play-btn" aria-label="Play / Pause">
+            <!-- Play icon -->
+            <svg class="icon-play" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="6,3 20,12 6,21"/>
+            </svg>
+            <!-- Pause icon -->
+            <svg class="icon-pause" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="3" width="4" height="18" rx="1"/>
+              <rect x="15" y="3" width="4" height="18" rx="1"/>
+            </svg>
+          </button>
+
+          <span class="time-display">
+            <span id="time-current">0:00</span>
+            <span class="total"> / <span id="time-total">—</span></span>
+          </span>
+
+          <div class="vol-wrap">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="3,9 3,15 7,15 13,21 13,3 7,9"/>
+              <path d="M16 9a5 5 0 0 1 0 6" stroke="#6b6760" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            </svg>
+            <input type="range" class="vol-slider" id="vol-slider" min="0" max="1" step="0.01" value="0.8" />
+          </div>
+        </div>
+      </div>
+
+      <!-- META -->
+      <div class="meta">
+        <strong>Vedant</strong>
+        Special Day<br />
+        MMXXV
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AUDIO ELEMENT -->
+  <!-- ⚠️  Put your .m4a at /public/audio/track.m4a -->
+<audio id="audio" preload="metadata" crossorigin="anonymous">
+  <source src="https://res.cloudinary.com/df6yxni8e/video/upload/Naina_Da_Kya_Kasoor_fkarmf.m4a" type="audio/mp4" />
+</audio>
+
+
+  <script>
+    const audio = document.getElementById('audio');
+    const playBtn = document.getElementById('play-btn');
+    const progressFill = document.getElementById('progress-fill');
+    const progressHead = document.getElementById('progress-head');
+    const progressTrack = document.getElementById('progress-track');
+    const timeCurrent = document.getElementById('time-current');
+    const timeTotal = document.getElementById('time-total');
+    const volSlider = document.getElementById('vol-slider');
+    const waveformCanvas = document.getElementById('waveform');
+    const ctx = waveformCanvas.getContext('2d');
+
+    // ─── Audio context & analyser ───
+    let audioCtx, analyser, source, bars = [];
+    const BAR_COUNT = 48;
+
+    function fmt(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60).toString().padStart(2, '0');
+      return `${m}:${sec}`;
+    }
+
+    // ─── Setup Web Audio ───
+    function setupAudio() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 128;
+      source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      drawBars();
+    }
+
+    // ─── Draw animated bars ───
+    function drawBars() {
+      requestAnimationFrame(drawBars);
+      if (!analyser) return;
+
+      const W = waveformCanvas.width;
+      const H = waveformCanvas.height;
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(data);
+
+      ctx.clearRect(0, 0, W, H);
+
+      const barW = (W / BAR_COUNT) - 1.5;
+      for (let i = 0; i < BAR_COUNT; i++) {
+        const v = data[Math.floor(i * data.length / BAR_COUNT)] / 255;
+        const h = audio.paused ? (2 + Math.random() * 3) : Math.max(2, v * H);
+        const x = i * (barW + 1.5);
+        const alpha = audio.paused ? 0.2 : (0.4 + v * 0.6);
+        ctx.fillStyle = `rgba(200,169,110,${alpha})`;
+        ctx.fillRect(x, H - h, barW, h);
+      }
+    }
+
+    // ─── Resize canvas ───
+    function resizeCanvas() {
+      const wrap = document.getElementById('waveform-wrap');
+      waveformCanvas.width = wrap.clientWidth;
+      waveformCanvas.height = wrap.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // ─── Play / Pause ───
+    playBtn.addEventListener('click', () => {
+      setupAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (audio.paused) {
+        audio.play();
+        playBtn.classList.add('playing');
+      } else {
+        audio.pause();
+        playBtn.classList.remove('playing');
+      }
+    });
+
+    // ─── Time update ───
+    audio.addEventListener('timeupdate', () => {
+      if (!audio.duration) return;
+      const pct = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = pct + '%';
+      progressHead.style.left = pct + '%';
+      timeCurrent.textContent = fmt(audio.currentTime);
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      timeTotal.textContent = fmt(audio.duration);
+    });
+
+    audio.addEventListener('ended', () => {
+      playBtn.classList.remove('playing');
+    });
+
+    // ─── Scrub ───
+    progressTrack.addEventListener('click', (e) => {
+      if (!audio.duration) return;
+      const rect = progressTrack.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = pct * audio.duration;
+    });
+
+    // ─── Volume ───
+    audio.volume = 0.8;
+    volSlider.addEventListener('input', () => {
+      audio.volume = volSlider.value;
+    });
+
+    // ─── Idle bar shimmer (no audio ctx) ───
+    (function idleShimmer() {
+      if (!analyser) {
+        resizeCanvas();
+        const W = waveformCanvas.width;
+        const H = waveformCanvas.height;
+        ctx.clearRect(0, 0, W, H);
+        const barW = (W / BAR_COUNT) - 1.5;
+        const t = Date.now() / 800;
+        for (let i = 0; i < BAR_COUNT; i++) {
+          const h = 2 + Math.sin(t + i * 0.4) * 1.5;
+          ctx.fillStyle = 'rgba(200,169,110,0.15)';
+          ctx.fillRect(i * (barW + 1.5), H - h, barW, h);
+        }
+        requestAnimationFrame(idleShimmer);
+      }
+    })();
+  </script>
+
+</body>
+</html>
