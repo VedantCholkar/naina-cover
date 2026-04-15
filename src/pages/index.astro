@@ -1,12 +1,12 @@
 ---
-// index.astro — Dark Brutalist Frost Showcase
+// index.astro — Dark Brutalist Parallax Showcase (Responsive)
 ---
 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>// Naina Da Kya Kasoor</title>
+  <title>// Vedant // Audio Showcase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Inter:wght@300;400;800&family=Space+Mono&display=swap" rel="stylesheet" />
@@ -18,8 +18,6 @@
       --bg-pure: #0a0a0a;
       --text-main: #f5f3ee;
       --text-muted: #6b6760;
-      /* Intense Frost Variables */
-      --glass-bg: rgba(20, 20, 20, 0.55);
       --glass-border: rgba(255, 255, 255, 0.12);
       --glass-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
       
@@ -37,17 +35,18 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── HEAVY BRUTALIST NOISE ─── */
-    .noise-layer {
+    /* ─── HEAVY BRUTALIST NOISE/FROST LAYER ─── */
+    .frost-noise-layer {
       position: fixed;
       inset: 0;
       z-index: 1;
-      opacity: 0.05;
+      opacity: 0.1;
       pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+                      radial-gradient(var(--text-main) 1px, transparent 1.5px);
+      background-size: 200px 200px, 32px 32px;
     }
 
-    /* ─── HALFTONE / GRID ACCENTS (Longshot vibe) ─── */
     .brutalist-grid {
       position: fixed;
       inset: 0;
@@ -55,72 +54,86 @@
       background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
       background-size: 50px 50px;
-      pointer-events: none;
     }
 
-    .halftone-corner {
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      width: 40vw;
-      height: 60vh;
-      z-index: 0;
-      opacity: 0.15;
-      background-image: radial-gradient(circle, var(--text-main) 2px, transparent 2.5px);
-      background-size: 12px 12px;
-      clip-path: polygon(100% 0, 100% 100%, 0 100%);
-      pointer-events: none;
-    }
-
-    /* ─── BACKGROUND TYPOGRAPHY ─── */
+    /* ─── PARALLAX BACKGROUND TYPOGRAPHY ─── */
     .bg-text-container {
       position: absolute;
       top: 45%;
-      left: 50%;
+      left: 45%;
       transform: translate(-50%, -50%);
       width: 100vw;
       text-align: center;
       z-index: 2;
       pointer-events: none;
+      transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.8s ease;
     }
 
     .massive-title {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: clamp(6rem, 16vw, 15rem);
-      line-height: 0.75;
+      font-size: clamp(4rem, 11vw, 10rem); 
+      line-height: 0.85;
       letter-spacing: -0.05em;
       text-transform: uppercase;
       color: var(--text-main);
-      white-space: nowrap;
+      white-space: normal; 
+      max-width: 85vw;
+      margin: 0 auto;
     }
 
     .serif-accent {
       font-family: var(--font-serif);
       font-weight: 300;
       font-style: italic;
-      font-size: clamp(3rem, 8vw, 7rem);
+      font-size: clamp(2rem, 5vw, 4.5rem);
       color: var(--text-muted);
       display: block;
-      margin-top: -0.2em;
-      letter-spacing: 0;
+      margin-top: -0.25em; 
     }
 
-    /* ─── META INFO (Top Corners) ─── */
-    .meta-top {
-      position: fixed;
-      top: 3rem;
-      width: 100%;
-      padding: 0 4rem;
+    /* ─── SIDE PARALLAX NAVIGATION (Desktop) ─── */
+    .side-nav {
+      position: absolute;
+      right: 4vw;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
       display: flex;
-      justify-content: space-between;
-      z-index: 10;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .side-nav-item {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--text-muted);
+      cursor: pointer;
+      padding: 1rem 0 1rem 2rem; 
+      text-align: right;
+      opacity: 0.3;
+      transform: translateX(10px);
+      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
+
+    .side-nav-item::before {
+      content: '';
+      display: block;
+      width: 0px;
+      height: 1px;
+      background: var(--text-main);
+      transition: width 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .side-nav-item:hover { opacity: 0.7; }
+    .side-nav-item.active { opacity: 1; color: var(--text-main); transform: translateX(0); font-size: 0.8rem; }
+    .side-nav-item.active::before { width: 30px; }
 
     /* ─── FLOATING FROSTED PLAYER PILL ─── */
     .player-wrapper {
@@ -129,24 +142,35 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
-      width: min(900px, 90vw);
+      width: min(800px, 85vw);
     }
 
     .frosted-pill {
-      background: var(--glass-bg);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
+      background: rgba(20, 20, 20, 0.55);
+      backdrop-filter: blur(35px);
+      -webkit-backdrop-filter: blur(35px);
       border: 1px solid var(--glass-border);
-      border-top: 1px solid rgba(255, 255, 255, 0.2); /* Highlight edge for extra depth */
+      border-top: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 100px;
       padding: 1.25rem 2.5rem;
       box-shadow: var(--glass-shadow);
       display: flex;
       align-items: center;
       gap: 2rem;
+      position: relative;
     }
 
-    /* ─── CONTROLS ─── */
+    .frosted-pill::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 100px;
+        z-index: -1;
+        opacity: 0.15;
+        background-image: radial-gradient(circle, var(--text-main) 1px, transparent 1.5px);
+        background-size: 16px 16px;
+    }
+
     .play-btn {
       width: 56px;
       height: 56px;
@@ -157,134 +181,178 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
       flex-shrink: 0;
     }
 
     .play-btn:hover { transform: scale(1.05); background: #ffffff; }
     .play-btn svg { width: 18px; height: 18px; fill: var(--bg-pure); }
 
-    /* Track/Waveform container */
-    .track-info {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
+    .track-info { flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+    .waveform-wrap { position: relative; height: 40px; width: 100%; cursor: pointer; }
+    #waveform { width: 100%; height: 100%; display: block; }
 
-    .waveform-wrap {
-      position: relative;
-      height: 40px;
-      width: 100%;
-      cursor: pointer;
-    }
-
-    #waveform {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    /* Scrub overlay */
-    .progress-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
+    .progress-track {
+        position: relative;
+        width: 100%; height: 4px;
+        background: rgba(196, 191, 181, 0.1);
+        border-radius: 2px; overflow: hidden; cursor: pointer;
     }
     
-    .progress-line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      height: 2px;
-      background: var(--text-main);
-      width: 0%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      transition: width 0.1s linear;
+    .fret-markers { position: absolute; inset: 0; display: flex; justify-content: space-around; pointer-events: none; }
+    .fret-marker { width: 1px; height: 100%; background: rgba(107, 103, 96, 0.4); }
+
+    .progress-fill {
+      position: absolute; top: 0; left: 0; height: 100%;
+      background: var(--text-main); width: 0%; pointer-events: none; transition: width 0.1s linear;
     }
 
-    /* Time & Labels */
     .time-row {
-      display: flex;
-      justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
+      display: flex; justify-content: space-between;
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.1em; color: var(--text-muted);
     }
 
-    /* ─── PLAYING STATE ─── */
     .play-btn.playing .icon-play { display: none; }
     .play-btn.playing .icon-pause { display: block; }
     .play-btn:not(.playing) .icon-play { display: block; }
     .play-btn:not(.playing) .icon-pause { display: none; }
 
-    @media (max-width: 768px) {
-      .frosted-pill { padding: 1rem 1.5rem; gap: 1rem; border-radius: 24px; flex-direction: column; }
-      .meta-top { padding: 0 1.5rem; top: 1.5rem; }
-      .waveform-wrap { height: 30px; }
-      .play-btn { width: 48px; height: 48px; }
+    /* ─── THE MOBILE RESPONSIVENESS FIX ─── */
+    @media (max-width: 850px) {
+      .bg-text-container {
+        left: 50%; /* Center perfectly on mobile */
+      }
+      
+      .massive-title {
+        font-size: clamp(3.5rem, 16vw, 6rem); /* Shrink so it doesn't overflow */
+        line-height: 0.9;
+        max-width: 90vw;
+      }
+
+      .serif-accent {
+        font-size: clamp(1.8rem, 8vw, 3.5rem);
+      }
+
+      /* Transform the Side Nav into a Horizontal Bottom Nav */
+      .side-nav {
+        top: auto;
+        bottom: 12rem; /* Sits right above the player */
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+        justify-content: center;
+        width: 95vw;
+        gap: 0.2rem;
+        flex-wrap: wrap;
+      }
+
+      .side-nav-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.6rem;
+        text-align: center;
+        justify-content: center;
+        transform: none; /* Remove desktop animation offset */
+      }
+
+      /* Hide the desktop underline effect on mobile */
+      .side-nav-item::before { display: none; }
+
+      .side-nav-item.active {
+        transform: none;
+        font-size: 0.65rem;
+        border-bottom: 1px solid var(--text-main); /* Simple underline for active state */
+      }
+
+      /* Adjust Player Pill for smaller screens */
+      .player-wrapper { bottom: 2rem; width: 92vw; }
+      .frosted-pill { padding: 1.25rem; gap: 1.2rem; border-radius: 30px; flex-direction: column; }
+      .waveform-wrap { height: 35px; }
+      .play-btn { width: 50px; height: 50px; }
     }
   </style>
 </head>
 <body>
 
   <div class="brutalist-grid"></div>
-  <div class="halftone-corner"></div>
-  <div class="noise-layer"></div>
+  <div class="frost-noise-layer"></div>
 
-  <header class="meta-top">
-    <div>Vol 01.</div>
-    <div>Acoustic // Raw</div>
-  </header>
-
-  <main class="bg-text-container">
-    <h1 class="massive-title">Naina Da</h1>
-    <span class="serif-accent">Kya Kasoor</span>
+  <main class="bg-text-container" id="bg-text">
+    <h1 class="massive-title" id="main-title">Naina Da</h1>
+    <span class="serif-accent" id="serif-subtitle">Kya Kasoor</span>
   </main>
+
+  <nav class="side-nav">
+    <div class="side-nav-item active" data-track="0">01 Naina Da</div>
+    <div class="side-nav-item" data-track="1">02 Finding Her</div>
+    <div class="side-nav-item" data-track="2">03 Tum Hi Ho</div>
+    <div class="side-nav-item" data-track="3">04 Mia & Seb's</div>
+    <div class="side-nav-item" data-track="4">05 Country Rds</div>
+  </nav>
 
   <div class="player-wrapper">
     <div class="frosted-pill">
-      
-      <button class="play-btn" id="play-btn" aria-label="Play / Pause">
+      <button class="play-btn" id="play-btn">
         <svg class="icon-play" viewBox="0 0 24 24"><polygon points="7,4 20,12 7,20"/></svg>
         <svg class="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
       </button>
 
       <div class="track-info">
         <div class="time-row">
-          <span>Your Guitarist</span>
+          <span id="player-track-name">Naina Da Kya Kasoor</span>
           <span><span id="time-current">0:00</span> / <span id="time-total">—</span></span>
         </div>
         
         <div class="waveform-wrap" id="waveform-wrap">
           <canvas id="waveform"></canvas>
-          <div class="progress-overlay" id="progress-track">
-            <div class="progress-line" id="progress-line"></div>
-          </div>
+        </div>
+        
+        <div class="progress-track" id="progress-track">
+            <div class="fret-markers">
+                <div class="fret-marker"></div><div class="fret-marker"></div><div class="fret-marker"></div>
+                <div class="fret-marker"></div><div class="fret-marker"></div><div class="fret-marker"></div>
+            </div>
+            <div class="progress-fill" id="progress-fill"></div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <audio id="audio" preload="metadata" crossorigin="anonymous">
-    <source src="https://res.cloudinary.com/df6yxni8e/video/upload/Naina_Da_Kya_Kasoor_fkarmf.m4a" type="audio/mp4" />
-  </audio>
+  <audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
 
   <script>
+    // ⚠️ THE UPDATED 5 TRACKS ⚠️
+    const tracks = [
+        { title: 'Naina Da', subtitle: 'Kya Kasoor', src: 'https://res.cloudinary.com/df6yxni8e/video/upload/Naina_Da_Kya_Kasoor_fkarmf.m4a' },
+        { title: 'Finding Her', subtitle: 'in my dreams', src: 'https://res.cloudinary.com/df6yxni8e/video/upload/v1776273676/Finding_Her_ura7lz.m4a' },
+        { title: 'Tum Hi Ho', subtitle: 'you are my everything', src: 'https://res.cloudinary.com/df6yxni8e/video/upload/v1776273673/Tum_Hi_Ho_c0injz.m4a' },
+        { title: 'Mia & Seb\'s', subtitle: 'la la land', src: 'https://res.cloudinary.com/df6yxni8e/video/upload/v1776273587/Mia_e9m7yh.m4a' },
+        { title: 'Country Roads', subtitle: 'nostalgia', src: 'https://res.cloudinary.com/df6yxni8e/video/upload/v1776273670/country_roads_eis9u4.m4a' }
+    ];
+
     const audio = document.getElementById('audio');
     const playBtn = document.getElementById('play-btn');
-    const progressLine = document.getElementById('progress-line');
+    const progressFill = document.getElementById('progress-fill');
     const progressTrack = document.getElementById('progress-track');
     const timeCurrent = document.getElementById('time-current');
     const timeTotal = document.getElementById('time-total');
     const waveformCanvas = document.getElementById('waveform');
     const ctx = waveformCanvas.getContext('2d');
+    
+    const bgText = document.getElementById('bg-text');
+    const mainTitle = document.getElementById('main-title');
+    const serifSubtitle = document.getElementById('serif-subtitle');
+    const playerTrackName = document.getElementById('player-track-name');
+    const sideNavItems = document.querySelectorAll('.side-nav-item');
 
+    let currentTrackIndex = 0;
+    let isTransitioning = false; 
     let audioCtx, analyser, source;
     const BAR_COUNT = 70;
+
+    // Load Initial Source
+    audio.src = tracks[0].src;
 
     function fmt(s) {
       if (isNaN(s)) return "0:00";
@@ -293,6 +361,91 @@
       return `${m}:${sec}`;
     }
 
+    // --- PARALLAX TRANSITION LOGIC ---
+    function switchTrack(newIndex) {
+        if (newIndex === currentTrackIndex || newIndex < 0 || newIndex >= tracks.length || isTransitioning) return;
+        
+        isTransitioning = true;
+        const direction = newIndex > currentTrackIndex ? 'down' : 'up';
+        let wasPlaying = !audio.paused;
+        
+        bgText.style.transform = direction === 'down' ? 'translate(-50%, -70%)' : 'translate(-50%, -30%)';
+        bgText.style.opacity = '0';
+        
+        sideNavItems.forEach(item => item.classList.remove('active'));
+        sideNavItems[newIndex].classList.add('active');
+
+        setTimeout(() => {
+            currentTrackIndex = newIndex;
+            const track = tracks[currentTrackIndex];
+            
+            mainTitle.textContent = track.title;
+            serifSubtitle.textContent = track.subtitle;
+            playerTrackName.textContent = `${track.title} - ${track.subtitle}`;
+            
+            audio.src = track.src;
+            audio.currentTime = 0;
+            progressFill.style.width = '0%';
+            playBtn.classList.remove('playing');
+
+            bgText.style.transition = 'none';
+            bgText.style.transform = direction === 'down' ? 'translate(-50%, -30%)' : 'translate(-50%, -70%)';
+            
+            void bgText.offsetWidth; 
+            
+            bgText.style.transition = 'transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.8s ease';
+            bgText.style.transform = 'translate(-50%, -50%)'; 
+            bgText.style.opacity = '1';
+
+            if (wasPlaying) {
+                audio.play();
+                playBtn.classList.add('playing');
+            }
+
+            setTimeout(() => { isTransitioning = false; }, 800);
+            
+        }, 500); 
+    }
+
+    // --- GLOBAL SCROLL LISTENER ---
+    let scrollTimeout;
+    window.addEventListener('wheel', (e) => {
+        if (isTransitioning) return;
+        if (scrollTimeout) return; 
+
+        if (e.deltaY > 30) {
+            switchTrack(currentTrackIndex + 1);
+            scrollTimeout = setTimeout(() => { scrollTimeout = null; }, 1000);
+        } else if (e.deltaY < -30) {
+            switchTrack(currentTrackIndex - 1);
+            scrollTimeout = setTimeout(() => { scrollTimeout = null; }, 1000);
+        }
+    }, { passive: true });
+
+    // Touch events for Mobile Swiping
+    let touchStartY = 0;
+    window.addEventListener('touchstart', e => touchStartY = e.changedTouches[0].screenY, { passive: true });
+    window.addEventListener('touchend', e => {
+        if (isTransitioning) return;
+        const touchEndY = e.changedTouches[0].screenY;
+        if (touchStartY - touchEndY > 50) switchTrack(currentTrackIndex + 1); // Swipe Up
+        if (touchEndY - touchStartY > 50) switchTrack(currentTrackIndex - 1); // Swipe Down
+    }, { passive: true });
+
+    // --- ARROW KEYS & CLICK LISTENER ---
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') switchTrack(currentTrackIndex + 1);
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') switchTrack(currentTrackIndex - 1);
+    });
+
+    sideNavItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.dataset.track);
+            switchTrack(index);
+        });
+    });
+
+    // --- AUDIO & WAVEFORM LOGIC ---
     function setupAudio() {
       if (audioCtx) return;
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -320,11 +473,8 @@
         const v = data[Math.floor(i * data.length / BAR_COUNT)] / 255;
         const h = audio.paused ? (2 + Math.random() * 2) : Math.max(2, v * H);
         const x = i * (barW + 2);
-        
-        // Switched bars to light cream to pop against the dark mode
         const alpha = audio.paused ? 0.2 : (0.4 + v * 0.6);
         ctx.fillStyle = `rgba(245, 243, 238, ${alpha})`;
-        
         ctx.fillRect(x, (H / 2) - (h / 2), barW, h);
       }
     }
@@ -352,7 +502,7 @@
     audio.addEventListener('timeupdate', () => {
       if (!audio.duration) return;
       const pct = (audio.currentTime / audio.duration) * 100;
-      progressLine.style.width = pct + '%';
+      progressFill.style.width = pct + '%';
       timeCurrent.textContent = fmt(audio.currentTime);
     });
 
@@ -362,7 +512,7 @@
 
     audio.addEventListener('ended', () => {
       playBtn.classList.remove('playing');
-      progressLine.style.width = '0%';
+      progressFill.style.width = '0%';
     });
 
     progressTrack.addEventListener('click', (e) => {
